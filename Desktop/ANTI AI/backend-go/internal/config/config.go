@@ -52,7 +52,7 @@ func Load() (*Config, error) {
 		Port:               getEnv("PORT", "8080"),
 		DatabaseURL:        getEnv("DB_URL", ""),
 		SupabaseURL:        getEnv("SUPABASE_URL", ""),
-		SupabaseServiceKey: getEnv("SUPABASE_SERVICE_ROLE_KEY", ""),
+		SupabaseServiceKey: getEnv("SUPABASE_KEY", ""),
 		SupabaseAnonKey:    getEnv("SUPABASE_ANON_KEY", ""),
 		JWTSecret:          getEnv("JWT_SECRET", ""),
 		WorkerURL:          getEnv("WORKER_URL", "http://localhost:8000"),
