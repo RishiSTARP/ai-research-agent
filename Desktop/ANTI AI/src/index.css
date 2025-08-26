@@ -1,0 +1,89 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Merriweather:wght@300;400;700;900&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Light mode tokens */
+    --bg: #ffffff;
+    --text: #000000;
+    --muted: #6b7280;
+    --surface: #f9fafb;
+    --border: #e5e7eb;
+    --accent: #000000;
+  }
+
+  .dark {
+    /* Dark mode tokens */
+    --bg: #000000;
+    --text: #ffffff;
+    --muted: #9ca3af;
+    --surface: #111111;
+    --border: #374151;
+    --accent: #ffffff;
+  }
+
+  html {
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+
+  body {
+    background-color: var(--bg);
+    color: var(--text);
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Merriweather', Georgia, serif;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-text text-bg px-6 py-3 rounded-lg font-medium transition-all duration-200 hover:opacity-90 active:scale-95;
+  }
+
+  .btn-secondary {
+    @apply bg-surface text-text border border-border px-6 py-3 rounded-lg font-medium transition-all duration-200 hover:bg-border active:scale-95;
+  }
+
+  .btn-ghost {
+    @apply text-text hover:bg-surface px-4 py-2 rounded-lg font-medium transition-all duration-200;
+  }
+
+  .input-field {
+    @apply w-full px-4 py-3 border border-border rounded-lg bg-surface text-text placeholder-muted focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent transition-all duration-200;
+  }
+
+  .card {
+    @apply bg-surface border border-border rounded-xl p-6 shadow-sm hover:shadow-md transition-all duration-200;
+  }
+
+  .provenance-chip {
+    @apply inline-flex items-center gap-2 px-3 py-1 bg-surface border border-border rounded-full text-sm text-muted hover:bg-border transition-colors cursor-pointer;
+  }
+
+  .evidence-chunk {
+    @apply p-4 border border-border rounded-lg bg-surface hover:bg-bg transition-colors cursor-pointer;
+  }
+
+  .tool-panel {
+    @apply bg-surface border border-border rounded-xl p-6 space-y-4;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+}

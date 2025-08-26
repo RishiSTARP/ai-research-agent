@@ -1,0 +1,172 @@
+version: '3.8'
+
+services:
+  # GROBID service for PDF to TEI conversion
+  grobid:
+    image: lfoppiano/grobid:0.7.3
+    container_name: gaply-grobid
+    ports:
+      - "8070:8070"
+    environment:
+      - JAVA_OPTS=-Xmx4g
+    volumes:
+      - grobid-data:/opt/grobid/grobid-home
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8070/api/isalive"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Chroma vector database
+  chroma:
+    image: chromadb/chroma:0.4.18
+    container_name: gaply-chroma
+    ports:
+      - "8000:8000"
+    environment:
+      - CHROMA_SERVER_HOST=0.0.0.0
+      - CHROMA_SERVER_HTTP_PORT=8000
+      - CHROMA_SERVER_CORS_ALLOW_ORIGINS=["*"]
+    volumes:
+      - chroma-data:/chroma/chroma
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/heartbeat"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # LanguageTool for grammar checking
+  languagetool:
+    image: silviof/docker-languagetool:6.3
+    container_name: gaply-languagetool
+    ports:
+      - "8010:8010"
+    environment:
+      - LT_LANG=en-US,en-GB
+      - LT_OPTS=-Xmx2g
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8010/v2/languages"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Redis for job queue (optional)
+  redis:
+    image: redis:7-alpine
+    container_name: gaply-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # PostgreSQL for local development (optional, can use Supabase cloud)
+  postgres:
+    image: postgres:15-alpine
+    container_name: gaply-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=gaply
+      - POSTGRES_USER=gaply
+      - POSTGRES_PASSWORD=gaply123
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./migrations:/docker-entrypoint-initdb.d
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U gaply -d gaply"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Python Worker Service
+  worker:
+    build:
+      context: ../worker-python
+      dockerfile: Dockerfile
+    container_name: gaply-worker
+    ports:
+      - "8001:8000"
+    environment:
+      - GROBID_URL=http://grobid:8070
+      - CHROMA_URL=http://chroma:8000
+      - LANGUAGETOOL_URL=http://languagetool:8010
+      - REDIS_URL=redis://redis:6379
+      - HOST=0.0.0.0
+      - PORT=8000
+      - LOG_LEVEL=INFO
+    volumes:
+      - ../worker-python:/app
+      - worker-cache:/app/.cache
+    depends_on:
+      grobid:
+        condition: service_healthy
+      chroma:
+        condition: service_healthy
+      languagetool:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Go API Service
+  api:
+    build:
+      context: ../backend-go
+      dockerfile: Dockerfile
+    container_name: gaply-api
+    ports:
+      - "8080:8080"
+    environment:
+      - PORT=8080
+      - DB_URL=postgres://gaply:gaply123@postgres:5432/gaply?sslmode=disable
+      - WORKER_URL=http://worker:8000
+      - GROBID_URL=http://grobid:8070
+      - CHROMA_URL=http://chroma:8000
+      - LANGUAGETOOL_URL=http://languagetool:8010
+      - REDIS_URL=redis://redis:6379
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_SERVICE_ROLE_KEY=${SUPABASE_SERVICE_ROLE_KEY}
+      - SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}
+      - JWT_SECRET=${JWT_SECRET}
+      - OPENALEX_BASE_URL=https://api.openalex.org
+      - UNPAYWALL_EMAIL=${UNPAYWALL_EMAIL}
+      - FRONTEND_URL=http://localhost:3000
+      - ALLOWED_ORIGINS=http://localhost:3000,http://127.0.0.1:3000
+      - LOG_LEVEL=INFO
+    volumes:
+      - ../backend-go:/app
+    depends_on:
+      postgres:
+        condition: service_healthy
+      worker:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+volumes:
+  grobid-data:
+  chroma-data:
+  redis-data:
+  postgres-data:
+  worker-cache:
+
+networks:
+  default:
+    name: gaply-network

@@ -1,0 +1,107 @@
+# Dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Build outputs
+dist/
+build/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+gaply-api
+backend-go/gaply-api
+
+# Environment variables
+.env
+.env.local
+.env.production
+.env.staging
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+venv/
+env/
+ENV/
+.venv/
+.env/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Docker
+.dockerignore
+
+# Database
+*.db
+*.sqlite
+
+# Cache
+.cache/
+*.cache
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Coverage reports
+coverage/
+*.cover
+.coverage
+
+# Test artifacts
+test-results/
+coverage-reports/
+
+# Supabase
+.supabase/
+
+# Storybook
+storybook-static/
+
+# Go
+go.sum
