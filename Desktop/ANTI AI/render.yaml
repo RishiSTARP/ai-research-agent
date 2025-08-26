@@ -1,0 +1,115 @@
+services:
+  # Go API Service
+  - type: web
+    name: gaply-api
+    env: docker
+    plan: starter
+    sourceDir: backend-go
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: PORT
+        value: 8080
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_KEY
+        sync: false
+      - key: SUPABASE_DB
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: OPENALEX_BASE_URL
+        value: https://api.openalex.org
+      - key: UNPAYWALL_EMAIL
+        sync: false
+      - key: WORKER_URL
+        value: https://gaply-worker.onrender.com
+      - key: GROBID_URL
+        value: https://gaply-grobid.onrender.com
+      - key: CHROMA_URL
+        value: https://gaply-chroma.onrender.com
+      - key: LANGUAGETOOL_URL
+        value: https://gaply-languagetool.onrender.com
+      - key: REDIS_URL
+        value: https://gaply-redis.onrender.com
+      - key: FRONTEND_URL
+        value: https://gaply.in
+      - key: ALLOWED_ORIGINS
+        value: https://gaply.in,https://gaply-qfkh.vercel.app
+      - key: LOG_LEVEL
+        value: INFO
+    healthCheckPath: /health
+    autoDeploy: true
+
+  # Python Worker Service
+  - type: web
+    name: gaply-worker
+    env: docker
+    plan: starter
+    sourceDir: worker-python
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: HOST
+        value: 0.0.0.0
+      - key: PORT
+        value: 8000
+      - key: GROBID_URL
+        value: https://gaply-grobid.onrender.com
+      - key: CHROMA_URL
+        value: https://gaply-chroma.onrender.com
+      - key: LANGUAGETOOL_URL
+        value: https://gaply-languagetool.onrender.com
+      - key: REDIS_URL
+        value: https://gaply-redis.onrender.com
+      - key: LOG_LEVEL
+        value: INFO
+    healthCheckPath: /health
+    autoDeploy: true
+
+  # GROBID Service
+  - type: web
+    name: gaply-grobid
+    env: docker
+    plan: starter
+    image: lfoppiano/grobid:0.7.3
+    envVars:
+      - key: JAVA_OPTS
+        value: -Xmx4g
+    healthCheckPath: /api/isalive
+    autoDeploy: true
+
+  # Chroma Vector Database
+  - type: web
+    name: gaply-chroma
+    env: docker
+    plan: starter
+    image: chromadb/chroma:0.4.18
+    envVars:
+      - key: CHROMA_SERVER_HOST
+        value: 0.0.0.0
+      - key: CHROMA_SERVER_HTTP_PORT
+        value: 8000
+      - key: CHROMA_SERVER_CORS_ALLOW_ORIGINS
+        value: '["*"]'
+    healthCheckPath: /api/v1/heartbeat
+    autoDeploy: true
+
+  # LanguageTool Service
+  - type: web
+    name: gaply-languagetool
+    env: docker
+    plan: starter
+    image: silviof/docker-languagetool:6.3
+    envVars:
+      - key: LT_LANG
+        value: en-US,en-GB
+      - key: LT_OPTS
+        value: -Xmx2g
+    healthCheckPath: /v2/languages
+    autoDeploy: true
+
+  # Redis Service
+  - type: redis
+    name: gaply-redis
+    plan: starter
+    maxmemoryPolicy: allkeys-lru
+    autoDeploy: true
