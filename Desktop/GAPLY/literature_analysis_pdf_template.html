@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gaply Literature Analysis Report</title>
+    <style>
+        /* Gaply Color Palette */
+        :root {
+            --primary-blue: #0052CC;
+            --teal-accent: #00BFA6;
+            --yellow-accent: #FFD166;
+            --coral-accent: #EF476F;
+            --dark-slate: #073B4C;
+            --black: #000000;
+            --white: #FFFFFF;
+        }
+
+        /* Typography */
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            font-size: 11px;
+            line-height: 1.4;
+            color: var(--black);
+            margin: 0;
+            padding: 0;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Merriweather', serif;
+            font-weight: 700;
+            margin: 0 0 8px 0;
+            color: var(--dark-slate);
+        }
+
+        h1 { font-size: 32px; line-height: 1.2; }
+        h2 { font-size: 24px; line-height: 1.3; }
+        h3 { font-size: 20px; line-height: 1.3; }
+        h4 { font-size: 16px; line-height: 1.4; }
+
+        /* Layout */
+        .page {
+            width: 210mm;
+            min-height: 297mm;
+            margin: 0 auto;
+            padding: 20mm;
+            background: var(--white);
+            position: relative;
+            page-break-after: always;
+        }
+
+        .cover-page { background: linear-gradient(135deg, var(--primary-blue) 0%, var(--teal-accent) 100%); color: var(--white); }
+        .content-page { background: var(--white); color: var(--black); }
+
+        /* Header/Footer */
+        .header {
+            position: absolute;
+            top: 15mm;
+            left: 20mm;
+            right: 20mm;
+            height: 20mm;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .small-logo {
+            width: 40mm;
+            height: auto;
+            opacity: 0.8;
+        }
+
+        .page-number {
+            font-size: 10px;
+            color: var(--dark-slate);
+            opacity: 0.6;
+        }
+
+        .footer {
+            position: absolute;
+            bottom: 15mm;
+            left: 20mm;
+            right: 20mm;
+            text-align: center;
+            font-size: 9px;
+            color: var(--dark-slate);
+            opacity: 0.7;
+        }
+
+        /* Cover Page */
+        .cover-content {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            text-align: center;
+            padding: 40mm 0;
+        }
+
+        .large-logo {
+            width: 80mm;
+            height: auto;
+            margin-bottom: 20mm;
+            filter: brightness(0) invert(1);
+        }
+
+        .cover-title {
+            font-size: 36px;
+            font-weight: 900;
+            margin-bottom: 8px;
+            letter-spacing: -1px;
+        }
+
+        .cover-subtitle {
+            font-size: 18px;
+            margin-bottom: 20mm;
+            opacity: 0.9;
+        }
+
+        .cover-meta {
+            position: absolute;
+            bottom: 40mm;
+            left: 20mm;
+            right: 20mm;
+        }
+
+        .purpose-statement {
+            font-size: 14px;
+            line-height: 1.6;
+            margin-top: 15mm;
+            padding: 15mm;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            backdrop-filter: blur(10px);
+        }
+
+        /* Content Sections */
+        .section {
+            margin-bottom: 25mm;
+        }
+
+        .section-title {
+            color: var(--primary-blue);
+            border-bottom: 2px solid var(--teal-accent);
+            padding-bottom: 3mm;
+            margin-bottom: 8mm;
+        }
+
+        /* Table of Contents */
+        .toc {
+            list-style: none;
+            padding: 0;
+        }
+
+        .toc li {
+            margin-bottom: 3mm;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .toc a {
+            color: var(--primary-blue);
+            text-decoration: none;
+        }
+
+        .toc .page-num {
+            color: var(--dark-slate);
+            font-weight: 600;
+        }
+
+        /* Cards and Components */
+        .card {
+            border: 1px solid #E5E7EB;
+            border-radius: 6px;
+            padding: 8mm;
+            margin-bottom: 6mm;
+            background: var(--white);
+        }
+
+        .card-header {
+            font-weight: 700;
+            color: var(--primary-blue);
+            margin-bottom: 4mm;
+        }
+
+        .confidence-badge {
+            display: inline-block;
+            padding: 1mm 3mm;
+            border-radius: 3mm;
+            font-size: 9px;
+            font-weight: 600;
+        }
+
+        .confidence-high { background: #D1FAE5; color: #065F46; }
+        .confidence-medium { background: #FED7AA; color: #9A3412; }
+        .confidence-low { background: #FECACA; color: #B91C1C; }
+
+        /* Tables */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 8mm 0;
+            font-size: 10px;
+        }
+
+        .data-table th,
+        .data-table td {
+            border: 1px solid #E5E7EB;
+            padding: 4mm;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        .data-table th {
+            background: var(--primary-blue);
+            color: var(--white);
+            font-weight: 700;
+        }
+
+        .data-table tr:nth-child(even) {
+            background: #F9FAFB;
+        }
+
+        /* Research Gap Matrix */
+        .gap-matrix {
+            display: grid;
+            grid-template-columns: 2fr repeat({{paper_count}}, 1fr) 1fr;
+            gap: 1px;
+            background: #E5E7EB;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .gap-cell {
+            background: var(--white);
+            padding: 6mm;
+            text-align: center;
+            font-size: 10px;
+        }
+
+        .gap-theme { text-align: left; font-weight: 600; }
+        .gap-present { background: #D1FAE5; color: #065F46; }
+        .gap-absent { background: #FECACA; color: #B91C1C; }
+
+        /* Charts Placeholder */
+        .chart-placeholder {
+            border: 2px dashed #E5E7EB;
+            border-radius: 8px;
+            padding: 20mm;
+            text-align: center;
+            color: #6B7280;
+            margin: 10mm 0;
+        }
+
+        .chart-placeholder svg {
+            width: 40mm;
+            height: 30mm;
+            margin-bottom: 5mm;
+            opacity: 0.5;
+        }
+
+        /* References */
+        .reference-item {
+            margin-bottom: 4mm;
+            line-height: 1.5;
+            padding-left: 5mm;
+            border-left: 3px solid var(--teal-accent);
+        }
+
+        .reference-number {
+            font-weight: 700;
+            color: var(--primary-blue);
+            margin-right: 3mm;
+        }
+
+        /* Executive Summary */
+        .exec-summary {
+            background: linear-gradient(135deg, #F8FAFC 0%, #E2E8F0 100%);
+            padding: 12mm;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary-blue);
+        }
+
+        .exec-summary h3 {
+            color: var(--primary-blue);
+            margin-bottom: 6mm;
+        }
+
+        .exec-bullets {
+            list-style: none;
+            padding: 0;
+        }
+
+        .exec-bullets li {
+            margin-bottom: 4mm;
+            padding-left: 8mm;
+            position: relative;
+        }
+
+        .exec-bullets li::before {
+            content: "•";
+            color: var(--teal-accent);
+            font-weight: bold;
+            position: absolute;
+            left: 0;
+        }
+
+        /* Methodology */
+        .methodology-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(80mm, 1fr));
+            gap: 8mm;
+            margin: 10mm 0;
+        }
+
+        .paper-card {
+            border: 1px solid #E5E7EB;
+            border-radius: 6px;
+            padding: 6mm;
+            background: var(--white);
+        }
+
+        .paper-title {
+            font-weight: 700;
+            color: var(--primary-blue);
+            margin-bottom: 3mm;
+        }
+
+        .paper-meta {
+            font-size: 9px;
+            color: #6B7280;
+            margin-bottom: 2mm;
+        }
+
+        /* Visual Hierarchy */
+        .highlight-box {
+            background: linear-gradient(135deg, var(--yellow-accent), var(--teal-accent));
+            color: var(--dark-slate);
+            padding: 8mm;
+            border-radius: 6px;
+            margin: 8mm 0;
+            font-weight: 600;
+        }
+
+        .callout {
+            background: #FEF3C7;
+            border-left: 4px solid var(--yellow-accent);
+            padding: 6mm;
+            margin: 6mm 0;
+            font-style: italic;
+        }
+
+        /* Accessibility */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        /* Print optimizations */
+        @media print {
+            .page {
+                margin: 0;
+                page-break-after: always;
+            }
+
+            .no-print {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Cover Page -->
+    <div class="page cover-page">
+        <div class="cover-content">
+            <div class="large-logo">
+                <!-- Gaply Logo Placeholder -->
+                <svg viewBox="0 0 200 60" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="200" height="60" fill="none"/>
+                    <text x="10" y="35" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="white">GAPLY</text>
+                    <text x="10" y="50" font-family="Arial, sans-serif" font-size="12" fill="white">AI Research Agent</text>
+                </svg>
+            </div>
+
+            <h1 class="cover-title">Literature Analysis Report</h1>
+            <p class="cover-subtitle">Multi-Paper Research Synthesis & Gap Analysis</p>
+
+            <div class="purpose-statement">
+                This comprehensive report analyzes multiple research papers to identify patterns, research gaps, and opportunities for future investigation. By systematically comparing methodologies, findings, and limitations across studies, this analysis provides researchers with actionable insights to advance their field and identify promising research directions.
+            </div>
+        </div>
+
+        <div class="cover-meta">
+            <p><strong>Analysis Session:</strong> {{session_id}}</p>
+            <p><strong>Generated:</strong> {{generation_date}}</p>
+            <p><strong>Papers Analyzed:</strong> {{paper_count}}</p>
+        </div>
+    </div>
+
+    <!-- Table of Contents -->
+    <div class="page content-page">
+        <div class="header">
+            <div class="small-logo">
+                <svg viewBox="0 0 100 20" xmlns="http://www.w3.org/2000/svg">
+                    <text x="0" y="15" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#0052CC">GAPLY</text>
+                </svg>
+            </div>
+            <div class="page-number">2</div>
+        </div>
+
+        <div class="section">
+            <h1>Table of Contents</h1>
+
+            <ol class="toc">
+                <li><a href="#executive-summary">Executive Summary</a> <span class="page-num">3</span></li>
+                <li><a href="#methodology">Methodology & Input Papers</a> <span class="page-num">4</span></li>
+                <li><a href="#key-findings">Key Findings</a> <span class="page-num">5</span></li>
+                <li><a href="#research-gaps">Research Gap Matrix</a> <span class="page-num">6</span></li>
+                <li><a href="#problem-statements">Problem Statements</a> <span class="page-num">7</span></li>
+                <li><a href="#cross-insights">Cross-Paper Insights</a> <span class="page-num">8</span></li>
+                <li><a href="#comparative-tables">Comparative Analysis Tables</a> <span class="page-num">9</span></li>
+                <li><a href="#figures-charts">Figures & Visualizations</a> <span class="page-num">10-11</span></li>
+                <li><a href="#limitations">Limitations & Conflicts</a> <span class="page-num">12</span></li>
+                <li><a href="#recommendations">Recommendations & Next Steps</a> <span class="page-num">13</span></li>
+                <li><a href="#references">References</a> <span class="page-num">14</span></li>
+                <li><a href="#appendix">Appendix</a> <span class="page-num">15+</span></li>
+            </ol>
+        </div>
+
+        <div class="footer">
+            Gaply AI Research Agent - Literature Analysis Report
+        </div>
+    </div>
+
+    <!-- Executive Summary -->
+    <div class="page content-page">
+        <div class="header">
+            <div class="small-logo">
+                <svg viewBox="0 0 100 20" xmlns="http://www.w3.org/2000/svg">
+                    <text x="0" y="15" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#0052CC">GAPLY</text>
+                </svg>
+            </div>
+            <div class="page-number">3</div>
+        </div>
+
+        <div class="section">
+            <h1 id="executive-summary">Executive Summary</h1>
+
+            <div class="exec-summary">
+                <h3>Analysis Overview</h3>
+                <p>This report synthesizes {{paper_count}} research papers to identify emerging patterns, methodological trends, and research opportunities in the field. The analysis employed systematic content extraction, AI-powered thematic analysis, and cross-paper comparison to provide actionable insights for researchers and supervisors.</p>
+
+                <h4>Key Metrics</h4>
+                <ul class="exec-bullets">
+                    <li><strong>{{total_gaps_identified}}</strong> research gaps identified across methodological, theoretical, and practical dimensions</li>
+                    <li><strong>{{total_problems_identified}}</strong> critical problem statements extracted and prioritized</li>
+                    <li><strong>{{cross_paper_insights_count}}</strong> cross-paper insights and synthesis points</li>
+                    <li><strong>{{average_confidence_score}}%</strong> average confidence in analysis results</li>
+                </ul>
+
+                <h4>Top 3 Recommendations</h4>
+                <ul class="exec-bullets">
+                    <li>{{recommendation_1}}</li>
+                    <li>{{recommendation_2}}</li>
+                    <li>{{recommendation_3}}</li>
+                </ul>
+
+                <h4>Methodology Summary</h4>
+                <p>The analysis combined automated content extraction from uploaded PDF documents with AI-powered thematic analysis and manual validation. Papers were processed for key variables, methodologies, findings, and limitations, then systematically compared across multiple dimensions to identify patterns and gaps.</p>
+            </div>
+        </div>
+
+        <div class="footer">
+            Gaply AI Research Agent - Executive Summary
+        </div>
+    </div>
+
+    <!-- Methodology & Input Papers -->
+    <div class="page content-page">
+        <div class="header">
+            <div class="small-logo">
+                <svg viewBox="0 0 100 20" xmlns="http://www.w3.org/2000/svg">
+                    <text x="0" y="15" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#0052CC">GAPLY</text>
+                </svg>
+            </div>
+            <div class="page-number">4</div>
+        </div>
+
+        <div class="section">
+            <h1 id="methodology">Methodology & Input Papers</h1>
+
+            <h3>Analysis Approach</h3>
+            <p>This literature analysis employed a multi-step systematic approach:</p>
+            <ol>
+                <li><strong>Content Extraction:</strong> Automated text extraction from PDF documents using advanced OCR and layout analysis</li>
+                <li><strong>AI Analysis:</strong> Multi-model AI processing for thematic identification, gap analysis, and cross-paper synthesis</li>
+                <li><strong>Manual Validation:</strong> Expert review and validation of AI-generated insights</li>
+                <li><strong>Synthesis:</strong> Cross-paper comparison and pattern identification</li>
+            </ol>
+
+            <div class="callout">
+                <strong>How references were used:</strong> References were parsed for DOI, year, author list, variables, and explicit problem statements. These were used to build the Research Gap Matrix and populate the References section.
+            </div>
+
+            <h3>Input Papers</h3>
+            <div class="methodology-grid">
+                {{paper_cards}}
+            </div>
+        </div>
+
+        <div class="footer">
+            Gaply AI Research Agent - Methodology
+        </div>
+    </div>
+
+    <!-- Key Findings -->
+    <div class="page content-page">
+        <div class="header">
+            <div class="small-logo">
+                <svg viewBox="0 0 100 20" xmlns="http://www.w3.org/2000/svg">
+                    <text x="0" y="15" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#0052CC">GAPLY</text>
+                </svg>
+            </div>
+            <div class="page-number">5</div>
+        </div>
+
+        <div class="section">
+            <h1 id="key-findings">Key Findings</h1>
+
+            <div class="highlight-box">
+                <h3>Primary Research Themes</h3>
+                <p>The analysis identified {{primary_themes_count}} major research themes across the {{paper_count}} papers, with {{overlap_percentage}}% thematic overlap between studies.</p>
+            </div>
+
+            <div class="chart-placeholder">
+                <svg viewBox="0 0 200 150" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="200" height="150" fill="none"/>
+                    <text x="100" y="75" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#6B7280">Theme Distribution Chart</text>
+                </svg>
+                <p><strong>Figure 1:</strong> Distribution of research themes across analyzed papers. Larger segments indicate higher frequency of theme occurrence.</p>
+            </div>
+
+            <h3>Critical Insights</h3>
+            <ul>
+                {{key_findings_bullets}}
+            </ul>
+
+            <div class="chart-placeholder">
+                <svg viewBox="0 0 200 150" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="200" height="150" fill="none"/>
+                    <text x="100" y="75" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#6B7280">Confidence vs Impact Matrix</text>
+                </svg>
+                <p><strong>Figure 2:</strong> Confidence vs. Impact matrix showing the reliability and significance of key findings.</p>
+            </div>
+        </div>
+
+        <div class="footer">
+            Gaply AI Research Agent - Key Findings
+        </div>
+    </div>
+
+    <!-- Research Gap Matrix -->
+    <div class="page content-page">
+        <div class="header">
+            <div class="small-logo">
+                <svg viewBox="0 0 100 20" xmlns="http://www.w3.org/2000/svg">
+                    <text x="0" y="15" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#0052CC">GAPLY</text>
+                </svg>
+            </div>
+            <div class="page-number">6</div>
+        </div>
+
+        <div class="section">
+            <h1 id="research-gaps">Research Gap Matrix</h1>
+
+            <p>This matrix compares research themes across papers to identify gaps and opportunities. Green indicates presence of the theme, red indicates absence. Combined Priority is calculated as: (frequency × novelty) where frequency is the number of papers addressing the theme and novelty represents how recently or uniquely the theme appears.</p>
+
+            <div class="gap-matrix">
+                {{gap_matrix_content}}
+            </div>
+
+            <div class="callout">
+                <strong>Priority Legend:</strong> High (3+ papers + novel approach), Medium (2-3 papers + established), Low (1 paper + well-established)
+            </div>
+        </div>
+
+        <div class="footer">
+            Gaply AI Research Agent - Research Gaps
+        </div>
+    </div>
+
+    <!-- Problem Statements -->
+    <div class="page content-page">
+        <div class="header">
+            <div class="small-logo">
+                <svg viewBox="0 0 100 20" xmlns="http://www.w3.org/2000/svg">
+                    <text x="0" y="15" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#0052CC">GAPLY</text>
+                </svg>
+            </div>
+            <div class="page-number">7</div>
+        </div>
+
+        <div class="section">
+            <h1 id="problem-statements">Problem Statements</h1>
+
+            <p>The following problem statements were extracted from the analyzed papers and synthesized for cross-paper relevance.</p>
+
+            {{problem_statement_cards}}
+
+            <div class="highlight-box">
+                <h4>Example Problem Statement</h4>
+                <div class="card">
+                    <div class="card-header">Data Quality Limitations</div>
+                    <p><strong>Origin:</strong> Paper 1 (Smith et al., 2023)</p>
+                    <p>Many studies rely on self-reported data which introduces significant bias and reduces the reliability of findings. This affects the validity of conclusions drawn about user behavior and system performance.</p>
+                    <span class="confidence-badge confidence-high">High Confidence</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            Gaply AI Research Agent - Problem Statements
+        </div>
+    </div>
+
+    <!-- Cross-Paper Insights -->
+    <div class="page content-page">
+        <div class="header">
+            <div class="small-logo">
+                <svg viewBox="0 0 100 20" xmlns="http://www.w3.org/2000/svg">
+                    <text x="0" y="15" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#0052CC">GAPLY</text>
+                </svg>
+            </div>
+            <div class="page-number">8</div>
+        </div>
+
+        <div class="section">
+            <h1 id="cross-insights">Cross-Paper Insights</h1>
+
+            <div class="chart-placeholder">
+                <svg viewBox="0 0 200 150" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="200" height="150" fill="none"/>
+                    <text x="100" y="75" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#6B7280">Network Graph</text>
+                </svg>
+                <p><strong>Figure 3:</strong> Theme overlap between papers. Nodes represent papers, edges show shared themes or variables.</p>
+            </div>
+
+            <h3>Synthesis Narrative</h3>
+            <p>{{synthesis_narrative}}</p>
+
+            <h3>Key Patterns Identified</h3>
+            <ul>
+                {{key_patterns_list}}
+            </ul>
+        </div>
+
+        <div class="footer">
+            Gaply AI Research Agent - Cross-Paper Insights
+        </div>
+    </div>
+
+    <!-- Comparative Tables -->
+    <div class="page content-page">
+        <div class="header">
+            <div class="small-logo">
+                <svg viewBox="0 0 100 20" xmlns="http://www.w3.org/2000/svg">
+                    <text x="0" y="15" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#0052CC">GAPLY</text>
+                </svg>
+            </div>
+            <div class="page-number">9</div>
+        </div>
+
+        <div class="section">
+            <h1 id="comparative-tables">Comparative Analysis Tables</h1>
+
+            <h3>Paper Metadata Comparison</h3>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Authors</th>
+                        <th>Year</th>
+                        <th>DOI</th>
+                        <th>Methods</th>
+                        <th>Sample N</th>
+                        <th>Key Variables</th>
+                        <th>Key Findings</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{comparative_table_rows}}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="footer">
+            Gaply AI Research Agent - Comparative Tables
+        </div>
+    </div>
+
+    <!-- Figures & Charts Page 1 -->
+    <div class="page content-page">
+        <div class="header">
+            <div class="small-logo">
+                <svg viewBox="0 0 100 20" xmlns="http://www.w3.org/2000/svg">
+                    <text x="0" y="15" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#0052CC">GAPLY</text>
+                </svg>
+            </div>
+            <div class="page-number">10</div>
+        </div>
+
+        <div class="section">
+            <h1 id="figures-charts">Figures & Visualizations</h1>
+
+            <div class="chart-placeholder">
+                <svg viewBox="0 0 200 150" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="200" height="150" fill="none"/>
+                    <text x="100" y="75" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#6B7280">Heatmap</text>
+                </svg>
+                <p><strong>Figure 4:</strong> Theme intensity across papers. Rows represent papers, columns represent themes. Color intensity shows presence and importance of each theme.</p>
+            </div>
+
+            <div class="chart-placeholder">
+                <svg viewBox="0 0 200 150" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="100" y="75" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#6B7280">Timeline</text>
+                </svg>
+                <p><strong>Figure 5:</strong> Chronology of relevant studies. Shows publication timeline and key milestones in the research field.</p>
+            </div>
+        </div>
+
+        <div class="footer">
+            Gaply AI Research Agent - Figures & Charts (1/2)
+        </div>
+    </div>
+
+    <!-- Figures & Charts Page 2 -->
+    <div class="page content-page">
+        <div class="header">
+            <div class="small-logo">
+                <svg viewBox="0 0 100 20" xmlns="http://www.w3.org/2000/svg">
+                    <text x="0" y="15" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#0052CC">GAPLY</text>
+                </svg>
+            </div>
+            <div class="page-number">11</div>
+        </div>
+
+        <div class="section">
+            <h3>Continued: Figures & Visualizations</h3>
+
+            <div class="chart-placeholder">
+                <svg viewBox="0 0 200 150" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="200" height="150" fill="none"/>
+                    <text x="100" y="75" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#6B7280">Bar Chart</text>
+                </svg>
+                <p><strong>Figure 6:</strong> Relevance ranking of papers. Bars show citation count or relevance score for each analyzed paper.</p>
+            </div>
+
+            <div class="chart-placeholder">
+                <svg viewBox="0 0 200 150" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="200" height="150" fill="none"/>
+                    <text x="100" y="75" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#6B7280">Correlation Matrix</text>
+                </svg>
+                <p><strong>Figure 7:</strong> Variable correlation matrix showing relationships between key variables across papers.</p>
+            </div>
+        </div>
+
+        <div class="footer">
+            Gaply AI Research Agent - Figures & Charts (2/2)
+        </div>
+    </div>
+
+    <!-- Limitations & Conflicts -->
+    <div class="page content-page">
+        <div class="header">
+            <div class="small-logo">
+                <svg viewBox="0 0 100 20" xmlns="http://www.w3.org/2000/svg">
+                    <text x="0" y="15" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#6B7280">GAPLY</text>
+                </svg>
+            </div>
+            <div class="page-number">12</div>
+        </div>
+
+        <div class="section">
+            <h1 id="limitations">Limitations & Conflicts</h1>
+
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Issue Type</th>
+                        <th>Description</th>
+                        <th>Impact</th>
+                        <th>Affected Papers</th>
+                        <th>Mitigation</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{limitations_table_rows}}
+                </tbody>
+            </table>
+
+            <div class="callout">
+                <strong>Note:</strong> These limitations were identified through systematic analysis and should be considered when interpreting the research synthesis.
+            </div>
+        </div>
+
+        <div class="footer">
+            Gaply AI Research Agent - Limitations & Conflicts
+        </div>
+    </div>
+
+    <!-- Recommendations & Next Steps -->
+    <div class="page content-page">
+        <div class="header">
+            <div class="small-logo">
+                <svg viewBox="0 0 100 20" xmlns="http://www.w3.org/2000/svg">
+                    <text x="0" y="15" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#0052CC">GAPLY</text>
+                </svg>
+            </div>
+            <div class="page-number">13</div>
+        </div>
+
+        <div class="section">
+            <h1 id="recommendations">Recommendations & Next Steps</h1>
+
+            <h3>Immediate Actions (0-6 months)</h3>
+            <ul>
+                {{immediate_recommendations}}
+            </ul>
+
+            <h3>Medium-Term Goals (6-18 months)</h3>
+            <ul>
+                {{medium_term_goals}}
+            </ul>
+
+            <h3>Long-Term Vision (18+ months)</h3>
+            <ul>
+                {{long_term_vision}}
+            </ul>
+
+            <h3>Suggested Experiments</h3>
+            <div class="card">
+                {{suggested_experiments}}
+            </div>
+        </div>
+
+        <div class="footer">
+            Gaply AI Research Agent - Recommendations
+        </div>
+    </div>
+
+    <!-- References -->
+    <div class="page content-page">
+        <div class="header">
+            <div class="small-logo">
+                <svg viewBox="0 0 100 20" xmlns="http://www.w3.org/2000/svg">
+                    <text x="0" y="15" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#0052CC">GAPLY</text>
+                </svg>
+            </div>
+            <div class="page-number">14</div>
+        </div>
+
+        <div class="section">
+            <h1 id="references">References</h1>
+
+            <p>All references were extracted verbatim from the uploaded papers and formatted according to APA 7th edition guidelines.</p>
+
+            <ol>
+                {{references_list}}
+            </ol>
+        </div>
+
+        <div class="footer">
+            Gaply AI Research Agent - References
+        </div>
+    </div>
+
+    <!-- Appendix -->
+    <div class="page content-page">
+        <div class="header">
+            <div class="small-logo">
+                <svg viewBox="0 0 100 20" xmlns="http://www.w3.org/2000/svg">
+                    <text x="0" y="15" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#0052CC">GAPLY</text>
+                </svg>
+            </div>
+            <div class="page-number">15</div>
+        </div>
+
+        <div class="section">
+            <h1 id="appendix">Appendix</h1>
+
+            <h3>Raw Analysis Data</h3>
+            <p>This appendix contains the raw extracted data and analysis notes from each paper.</p>
+
+            {{appendix_content}}
+        </div>
+
+        <div class="footer">
+            Gaply AI Research Agent - Appendix
+        </div>
+    </div>
+</body>
+</html>
